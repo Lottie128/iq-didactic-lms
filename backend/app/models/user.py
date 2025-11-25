@@ -17,7 +17,7 @@ class User(Base):
     country = Column(String, nullable=True)
     occupation = Column(String, nullable=True)
     profile_picture = Column(String, nullable=True)
-    role = Column(String, default="student", nullable=False)
+    role = Column(String, default="student", nullable=False)  # String not Enum
     preferred_language = Column(String, default="en", nullable=False)
     email_verified = Column(Boolean, default=False, nullable=False)
     profile_completion = Column(Integer, default=0, nullable=False)
