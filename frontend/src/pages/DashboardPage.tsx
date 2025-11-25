@@ -1,9 +1,10 @@
 import { useAuth } from '../contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
+import ProfilePictureUpload from '../components/ProfilePictureUpload'
 import '../styles/EnhancedDashboard.css'
 
 const DashboardPage = () => {
-  const { user, logout } = useAuth()
+  const { user, logout, refetch } = useAuth()
   const { t, i18n } = useTranslation()
 
   const toggleLanguage = () => {
@@ -22,6 +23,16 @@ const DashboardPage = () => {
     if (!user?.occupation) missing.push('Occupation')
     if (!user?.profile_picture) missing.push('Profile Picture')
     return missing
+  }
+
+  const handleUploadSuccess = () => {
+    // Refresh user data after upload
+    if (refetch) {
+      refetch()
+    } else {
+      // Fallback: reload page if refetch not available
+      window.location.reload()
+    }
   }
 
   return (
@@ -82,7 +93,11 @@ const DashboardPage = () => {
               </p>
             </div>
             {user?.profile_picture ? (
-              <img src={user.profile_picture} alt="Profile" className="profile-avatar" />
+              <img 
+                src={user.profile_picture.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL}${user.profile_picture}` : user.profile_picture} 
+                alt="Profile" 
+                className="profile-avatar" 
+              />
             ) : (
               <div className="profile-avatar placeholder">
                 <span>{user?.full_name.charAt(0).toUpperCase()}</span>
@@ -168,6 +183,18 @@ const DashboardPage = () => {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Profile Picture Upload Section */}
+        <div className="info-card profile-picture-section">
+          <h3>📸 Profile Picture</h3>
+          <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+            Upload a profile picture to personalize your account. Supported formats: JPG, PNG, WEBP, GIF (Max 5MB)
+          </p>
+          <ProfilePictureUpload
+            currentPicture={user?.profile_picture}
+            onUploadSuccess={handleUploadSuccess}
+          />
         </div>
 
         {/* Courses Section */}
