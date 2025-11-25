@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "logout": "Logout",
+    "switchLanguage": "Switch to French"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "welcomeBack": "Welcome back!",
+    "createAccount": "Create your account"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}!",
+    "myCourses": "My Courses",
+    "noCourses": "No courses yet. Start learning today!"
+  },
+  "errors": {
+    "loginFailed": "Login failed. Please check your credentials.",
+    "registerFailed": "Registration failed. Please try again.",
+    "required": "This field is required"
+  }
+}
