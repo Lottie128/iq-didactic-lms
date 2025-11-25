@@ -15,6 +15,7 @@ interface AuthContextType {
     occupation?: string
   ) => Promise<void>
   logout: () => void
+  refetch: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -22,6 +23,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const fetchUser = async () => {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      try {
+        const currentUser = await authApi.getCurrentUser()
+        setUser(currentUser)
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+        localStorage.removeItem('access_token')
+        setUser(null)
+      }
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('access_token')
@@ -71,8 +86,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     window.location.href = '/login'
   }
 
+  const refetch = async () => {
+    await fetchUser()
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refetch }}>
       {children}
     </AuthContext.Provider>
   )
