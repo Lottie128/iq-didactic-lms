@@ -5,7 +5,15 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, fullName: string, language?: string) => Promise<void>
+  register: (
+    email: string,
+    password: string,
+    fullName: string,
+    language?: string,
+    phone?: string,
+    country?: string,
+    occupation?: string
+  ) => Promise<void>
   logout: () => void
 }
 
@@ -16,7 +24,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in on mount
     const token = localStorage.getItem('access_token')
     if (token) {
       authApi.getCurrentUser()
@@ -37,14 +44,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(currentUser)
   }
 
-  const register = async (email: string, password: string, fullName: string, language = 'en') => {
+  const register = async (
+    email: string,
+    password: string,
+    fullName: string,
+    language = 'en',
+    phone?: string,
+    country?: string,
+    occupation?: string
+  ) => {
     await authApi.register({
       email,
       password,
       full_name: fullName,
       preferred_language: language,
+      phone,
+      country,
+      occupation,
     })
-    // Auto-login after registration
     await login(email, password)
   }
 
