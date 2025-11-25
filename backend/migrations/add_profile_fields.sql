@@ -1,5 +1,7 @@
 -- Migration to add new profile fields to users table
+-- Run this if upgrading from feat/auth-setup to feat/enhanced-ui
 
+-- Add new columns
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS student_id VARCHAR UNIQUE,
 ADD COLUMN IF NOT EXISTS phone VARCHAR,
