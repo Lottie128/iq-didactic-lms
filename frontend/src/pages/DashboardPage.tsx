@@ -1,6 +1,6 @@
 import { useAuth } from '../contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
-import '../styles/Dashboard.css'
+import '../styles/EnhancedDashboard.css'
 
 const DashboardPage = () => {
   const { user, logout } = useAuth()
@@ -12,39 +12,174 @@ const DashboardPage = () => {
     localStorage.setItem('language', newLang)
   }
 
+  const profileCompletion = user?.profile_completion || 0
+  const showProfileBanner = profileCompletion < 100
+
+  const getMissingFields = () => {
+    const missing = []
+    if (!user?.phone) missing.push('Phone')
+    if (!user?.country) missing.push('Country')
+    if (!user?.occupation) missing.push('Occupation')
+    if (!user?.profile_picture) missing.push('Profile Picture')
+    return missing
+  }
+
   return (
-    <div className="dashboard">
-      <nav className="navbar">
+    <div className="dashboard enhanced">
+      <nav className="navbar enhanced">
         <div className="navbar-brand">
-          <h1>🎓 IQ Didactic</h1>
+          <div className="logo-badge">🎓</div>
+          <h1>IQ Didactic</h1>
         </div>
         <div className="navbar-menu">
-          <button onClick={toggleLanguage} className="btn-secondary">
-            {i18n.language === 'en' ? '🇫🇷 Français' : '🇬🇧 English'}
+          <button onClick={toggleLanguage} className="btn-icon">
+            {i18n.language === 'en' ? '🇫🇷' : '🇬🇧'}
           </button>
-          <button onClick={logout} className="btn-danger">
+          <button onClick={logout} className="btn-logout">
+            <span>🚪</span>
             {t('nav.logout')}
           </button>
         </div>
       </nav>
 
       <div className="dashboard-content">
-        <div className="welcome-section">
-          <h2>{t('dashboard.welcome', { name: user?.full_name })}</h2>
-          <div className="user-info">
-            <p><strong>Email:</strong> {user?.email}</p>
-            <p><strong>Role:</strong> {user?.role}</p>
-            <p><strong>Language:</strong> {user?.preferred_language === 'en' ? 'English' : 'Français'}</p>
+        {/* Profile Completion Banner */}
+        {showProfileBanner && (
+          <div className="profile-banner">
+            <div className="banner-icon">⚠️</div>
+            <div className="banner-content">
+              <h3>Complete Your Profile</h3>
+              <p>
+                Your profile is {profileCompletion}% complete. Add missing information to enhance your learning
+                experience.
+              </p>
+              <div className="missing-fields">
+                <span className="missing-label">Missing:</span>
+                {getMissingFields().map((field, i) => (
+                  <span key={i} className="field-tag">
+                    {field}
+                  </span>
+                ))}
+              </div>
+              <div className="progress-bar-container">
+                <div className="progress-bar-fill" style={{ width: `${profileCompletion}%` }}>
+                  <span className="progress-text">{profileCompletion}%</span>
+                </div>
+              </div>
+            </div>
+            <button className="btn-complete">Complete Now →</button>
+          </div>
+        )}
+
+        {/* Welcome Section */}
+        <div className="welcome-card">
+          <div className="card-header">
+            <div>
+              <h2>{t('dashboard.welcome', { name: user?.full_name })}</h2>
+              <p className="student-id">
+                <span className="id-badge">🎫</span>
+                Student ID: <strong>{user?.student_id}</strong>
+              </p>
+            </div>
+            {user?.profile_picture ? (
+              <img src={user.profile_picture} alt="Profile" className="profile-avatar" />
+            ) : (
+              <div className="profile-avatar placeholder">
+                <span>{user?.full_name.charAt(0).toUpperCase()}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="user-stats">
+            <div className="stat-card">
+              <div className="stat-icon">📚</div>
+              <div className="stat-info">
+                <span className="stat-value">0</span>
+                <span className="stat-label">Enrolled Courses</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">✅</div>
+              <div className="stat-info">
+                <span className="stat-value">0</span>
+                <span className="stat-label">Completed</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">🏆</div>
+              <div className="stat-info">
+                <span className="stat-value">0</span>
+                <span className="stat-label">Achievements</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">🔥</div>
+              <div className="stat-info">
+                <span className="stat-value">0</span>
+                <span className="stat-label">Day Streak</span>
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* User Info Card */}
+        <div className="info-grid">
+          <div className="info-card">
+            <h3>👤 Personal Information</h3>
+            <div className="info-row">
+              <span className="info-label">Email:</span>
+              <span className="info-value">{user?.email}</span>
+              {user?.email_verified ? (
+                <span className="badge verified">✔️ Verified</span>
+              ) : (
+                <span className="badge unverified">⚠️ Unverified</span>
+              )}
+            </div>
+            <div className="info-row">
+              <span className="info-label">Phone:</span>
+              <span className="info-value">{user?.phone || 'Not provided'}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Country:</span>
+              <span className="info-value">{user?.country || 'Not provided'}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Occupation:</span>
+              <span className="info-value">{user?.occupation || 'Not provided'}</span>
+            </div>
+          </div>
+
+          <div className="info-card">
+            <h3>⚙️ Preferences</h3>
+            <div className="info-row">
+              <span className="info-label">Role:</span>
+              <span className="badge role">{user?.role}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Language:</span>
+              <span className="info-value">
+                {user?.preferred_language === 'en' ? '🇬🇧 English' : '🇫🇷 Français'}
+              </span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Member Since:</span>
+              <span className="info-value">
+                {new Date(user?.created_at || '').toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Courses Section */}
         <div className="courses-section">
-          <h3>{t('dashboard.myCourses')}</h3>
+          <h3>📚 {t('dashboard.myCourses')}</h3>
           <div className="empty-state">
-            <p>📚 {t('dashboard.noCourses')}</p>
-            <p style={{ marginTop: '10px', fontSize: '14px', color: '#64748b' }}>
-              Courses will be available in the next feature branch: <code>feat/courses</code>
+            <div className="empty-icon">📦</div>
+            <p>{t('dashboard.noCourses')}</p>
+            <p className="empty-hint">
+              Courses will be available in the next feature: <code>feat/courses</code>
             </p>
+            <button className="btn-primary">Browse Courses</button>
           </div>
         </div>
       </div>
