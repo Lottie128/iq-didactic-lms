@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "courses": "Cours",
+    "logout": "Déconnexion",
+    "switchLanguage": "Passer à l'anglais"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "fullName": "Nom complet",
+    "loginButton": "Se connecter",
+    "registerButton": "Créer un compte",
+    "noAccount": "Pas de compte ?",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "welcomeBack": "Bienvenue !",
+    "createAccount": "Créer votre compte"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue, {{name}} !",
+    "myCourses": "Mes Cours",
+    "noCourses": "Pas encore de cours. Commencez à apprendre aujourd'hui !"
+  },
+  "errors": {
+    "loginFailed": "Échec de la connexion. Vérifiez vos identifiants.",
+    "registerFailed": "Échec de l'inscription. Réessayez.",
+    "required": "Ce champ est obligatoire"
+  }
+}
