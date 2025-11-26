@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.models.user import User, UserRole
+from app.models.user import User
 from app.schemas.auth import UserRegister
 from app.core.security import get_password_hash, verify_password, create_access_token
 from datetime import timedelta
@@ -18,14 +18,28 @@ class AuthService:
                 detail="Email already registered"
             )
         
+        # Generate unique student ID
+        while True:
+            student_id = User.generate_student_id()
+            if not db.query(User).filter(User.student_id == student_id).first():
+                break
+        
         # Create new user
         user = User(
+            student_id=student_id,
             email=user_data.email,
             password_hash=get_password_hash(user_data.password),
             full_name=user_data.full_name,
+            phone=user_data.phone,
+            country=user_data.country,
+            occupation=user_data.occupation,
             preferred_language=user_data.preferred_language,
-            role=UserRole.STUDENT  # Default role
+            role="student",
+            email_verified=False
         )
+        
+        # Calculate initial profile completion
+        user.profile_completion = user.calculate_profile_completion()
         
         db.add(user)
         db.commit()
@@ -53,10 +67,10 @@ class AuthService:
     
     @staticmethod
     def create_token(user: User) -> str:
-        """Create access token for user"""
+        """Create access token for user""" 
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": user.email, "role": user.role.value},
+            data={"sub": user.email, "role": user.role},
             expires_delta=access_token_expires
         )
         return access_token

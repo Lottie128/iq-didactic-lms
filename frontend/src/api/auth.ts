@@ -5,6 +5,9 @@ export interface RegisterData {
   password: string
   full_name: string
   preferred_language?: string
+  phone?: string
+  country?: string
+  occupation?: string
 }
 
 export interface LoginData {
@@ -14,10 +17,17 @@ export interface LoginData {
 
 export interface User {
   id: string
+  student_id: string
   email: string
   full_name: string
+  phone?: string
+  country?: string
+  occupation?: string
   role: string
+  profile_picture?: string
   preferred_language: string
+  email_verified: boolean
+  profile_completion: number
   created_at: string
   updated_at: string
 }
