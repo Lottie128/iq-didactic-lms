@@ -19,6 +19,8 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log('File selected:', file.name, file.type, file.size);
+
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
@@ -47,7 +49,17 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
       const formData = new FormData();
       formData.append('file', file);
 
-      const token = localStorage.getItem('token');
+      // FIXED: Use 'access_token' not 'token'
+      const token = localStorage.getItem('access_token');
+      console.log('Token found:', token ? 'Yes' : 'No');
+      console.log('API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/upload/profile-picture`);
+
+      if (!token) {
+        setError('Not authenticated. Please login again.');
+        setUploading(false);
+        return;
+      }
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/upload/profile-picture`,
         formData,
@@ -59,9 +71,29 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         }
       );
 
+      console.log('Upload successful:', response.data);
       onUploadSuccess(response.data.url);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Upload failed. Please try again.');
+      console.error('Upload error:', err);
+      console.error('Error response:', err.response);
+      
+      let errorMessage = 'Upload failed. Please try again.';
+      
+      if (err.response) {
+        // Server responded with error
+        errorMessage = err.response.data?.detail || err.response.data?.message || errorMessage;
+        console.error('Server error:', err.response.status, err.response.data);
+      } else if (err.request) {
+        // Request made but no response
+        errorMessage = 'No response from server. Check if backend is running.';
+        console.error('No response received');
+      } else {
+        // Error setting up request
+        errorMessage = err.message || errorMessage;
+        console.error('Request setup error:', err.message);
+      }
+      
+      setError(errorMessage);
       setPreview(currentPicture || null);
     } finally {
       setUploading(false);
@@ -75,17 +107,36 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      // FIXED: Use 'access_token' not 'token'
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        setError('Not authenticated. Please login again.');
+        setUploading(false);
+        return;
+      }
+
       await axios.delete(
         `${import.meta.env.VITE_API_BASE_URL}/api/upload/profile-picture`,
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }
       );
+      
+      console.log('Delete successful');
       setPreview(null);
       onUploadSuccess('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Delete failed. Please try again.');
+      console.error('Delete error:', err);
+      
+      let errorMessage = 'Delete failed. Please try again.';
+      
+      if (err.response) {
+        errorMessage = err.response.data?.detail || err.response.data?.message || errorMessage;
+        console.error('Server error:', err.response.status, err.response.data);
+      }
+      
+      setError(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -137,7 +188,14 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         )}
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          {error}
+          <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8 }}>
+            Check browser console for details
+          </div>
+        </div>
+      )}
 
       <style>{`
         .profile-picture-upload {
@@ -194,6 +252,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           background: rgba(239, 68, 68, 0.1);
           border-radius: 6px;
           border: 1px solid rgba(239, 68, 68, 0.2);
+          max-width: 300px;
         }
 
         .btn {
