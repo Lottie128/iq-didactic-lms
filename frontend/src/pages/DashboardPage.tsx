@@ -1,11 +1,14 @@
 import { useAuth } from '../contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import ProfilePictureUpload from '../components/ProfilePictureUpload'
 import '../styles/EnhancedDashboard.css'
 
 const DashboardPage = () => {
   const { user, logout, refetch } = useAuth()
   const { t, i18n } = useTranslation()
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [showAchievement, setShowAchievement] = useState(false)
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'fr' : 'en'
@@ -26,13 +29,25 @@ const DashboardPage = () => {
   }
 
   const handleUploadSuccess = () => {
-    // Refresh user data after upload
+    // Check if profile is now complete
+    const wasIncomplete = profileCompletion < 100
+    
+    // Refresh user data
     if (refetch) {
-      refetch()
+      refetch().then(() => {
+        // Show achievement if profile just became complete
+        if (wasIncomplete && user?.profile_completion === 100) {
+          setShowAchievement(true)
+          setTimeout(() => setShowAchievement(false), 5000)
+        }
+      })
     } else {
-      // Fallback: reload page if refetch not available
       window.location.reload()
     }
+  }
+
+  const handleCompleteNowClick = () => {
+    setShowProfileModal(true)
   }
 
   return (
@@ -54,9 +69,22 @@ const DashboardPage = () => {
       </nav>
 
       <div className="dashboard-content">
+        {/* Achievement Notification */}
+        {showAchievement && (
+          <div className="achievement-notification">
+            <div className="achievement-content">
+              <div className="achievement-icon">🏆</div>
+              <div className="achievement-text">
+                <h3>Profile Complete!</h3>
+                <p>You've completed your profile. Great job!</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Profile Completion Banner */}
         {showProfileBanner && (
-          <div className="profile-banner">
+          <div className="profile-banner" onClick={handleCompleteNowClick} style={{ cursor: 'pointer' }}>
             <div className="banner-icon">⚠️</div>
             <div className="banner-content">
               <h3>Complete Your Profile</h3>
@@ -78,7 +106,7 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-            <button className="btn-complete">Complete Now →</button>
+            <button className="btn-complete" onClick={handleCompleteNowClick}>Complete Now →</button>
           </div>
         )}
 
@@ -92,17 +120,22 @@ const DashboardPage = () => {
                 Student ID: <strong>{user?.student_id}</strong>
               </p>
             </div>
-            {user?.profile_picture ? (
-              <img 
-                src={user.profile_picture.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL}${user.profile_picture}` : user.profile_picture} 
-                alt="Profile" 
-                className="profile-avatar" 
-              />
-            ) : (
-              <div className="profile-avatar placeholder">
-                <span>{user?.full_name.charAt(0).toUpperCase()}</span>
+            <div className="profile-avatar-container" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
+              {user?.profile_picture ? (
+                <img 
+                  src={user.profile_picture.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL}${user.profile_picture}` : user.profile_picture} 
+                  alt="Profile" 
+                  className="profile-avatar" 
+                />
+              ) : (
+                <div className="profile-avatar placeholder">
+                  <span>{user?.full_name.charAt(0).toUpperCase()}</span>
+                </div>
+              )}
+              <div className="avatar-overlay">
+                <span>📸 Change</span>
               </div>
-            )}
+            </div>
           </div>
 
           <div className="user-stats">
@@ -185,18 +218,6 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Profile Picture Upload Section */}
-        <div className="info-card profile-picture-section">
-          <h3>📸 Profile Picture</h3>
-          <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Upload a profile picture to personalize your account. Supported formats: JPG, PNG, WEBP, GIF (Max 5MB)
-          </p>
-          <ProfilePictureUpload
-            currentPicture={user?.profile_picture}
-            onUploadSuccess={handleUploadSuccess}
-          />
-        </div>
-
         {/* Courses Section */}
         <div className="courses-section">
           <h3>📚 {t('dashboard.myCourses')}</h3>
@@ -210,6 +231,179 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Profile Picture Modal */}
+      {showProfileModal && (
+        <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📸 Update Profile Picture</h3>
+              <button className="modal-close" onClick={() => setShowProfileModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <ProfilePictureUpload
+                currentPicture={user?.profile_picture}
+                onUploadSuccess={() => {
+                  handleUploadSuccess()
+                  setShowProfileModal(false)
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .profile-avatar-container {
+          position: relative;
+        }
+
+        .avatar-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+
+        .profile-avatar-container:hover .avatar-overlay {
+          opacity: 1;
+        }
+
+        .achievement-notification {
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          z-index: 1000;
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          padding: 1.5rem;
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+          animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4.5s;
+        }
+
+        .achievement-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .achievement-icon {
+          font-size: 3rem;
+          animation: bounce 1s ease infinite;
+        }
+
+        .achievement-text h3 {
+          margin: 0;
+          font-size: 1.2rem;
+        }
+
+        .achievement-text p {
+          margin: 0.25rem 0 0;
+          opacity: 0.9;
+          font-size: 0.9rem;
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeOut {
+          to {
+            opacity: 0;
+            transform: translateX(400px);
+          }
+        }
+
+        @keyframes bounce {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+          animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+          background: var(--bg-secondary);
+          border-radius: 16px;
+          max-width: 500px;
+          width: 90%;
+          max-height: 90vh;
+          overflow: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: scaleIn 0.3s ease;
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+          margin: 0;
+          color: var(--text-primary);
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: var(--text-secondary);
+          transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+          color: var(--text-primary);
+        }
+
+        .modal-body {
+          padding: 2rem;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0.9);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   )
 }
