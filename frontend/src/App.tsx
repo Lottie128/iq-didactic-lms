@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { useState } from 'react'
 import Preloader from './components/Preloader'
-import ThemeToggle from './components/ThemeToggle'
+import DarkModeToggle from './components/DarkModeToggle';
 import AnimatedBackground from './components/AnimatedBackground'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -23,7 +23,6 @@ function App() {
       {!showPreloader && (
         <>
           <AnimatedBackground />
-          <ThemeToggle />
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <Router>
@@ -51,6 +50,7 @@ function App() {
               </Router>
             </AuthProvider>
           </QueryClientProvider>
+          <DarkModeToggle />
         </>
       )}
     </ThemeProvider>

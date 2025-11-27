@@ -1,117 +1,135 @@
 :root {
-  /* Light Mode - Soft Warm Colors */
-  --bg-primary: #f5f1e8;
-  --bg-secondary: #faf8f3;
+  /* Backgrounds (clean, minimal, high contrast for learning) */
+  --bg-primary: #f8fafc;        /* ultra clean base */
+  --bg-secondary: #ffffff;       /* cards / surfaces */
   --bg-card: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.9);
-  --text-primary: #2d3748;
-  --text-secondary: #718096;
-  --text-muted: #a0aec0;
-  --border-color: rgba(203, 213, 224, 0.5);
-  --shadow-color: rgba(0, 0, 0, 0.08);
-  --shadow-hover: rgba(0, 0, 0, 0.12);
+  --bg-muted: #eef2f6;           /* subtle sections */
+
+  /* Text (razor sharp readability) */
+  --text-primary: #0f172a;       /* deep slate */
+  --text-secondary: #475569;     /* softer */
+  --text-muted: #94a3b8;         /* captions */
+
+  /* Borders */
+  --border-color: rgba(148, 163, 184, 0.35);
+
+  /* New Accent: educational blue-purple hybrid */
+  --accent-primary: #3b82f6;     /* strong academic blue */
+  --accent-secondary: #6366f1;   /* indigo depth */
+  --accent-tertiary: #a855f7;    /* optional highlight */
   
-  --gradient-1: #667eea;
-  --gradient-2: #764ba2;
-  --accent-purple: #7c3aed;
-  --accent-blue: #3b82f6;
-  --accent-success: #10b981;
-  --accent-warning: #f59e0b;
-  --accent-error: #ef4444;
+  --accent-gradient: linear-gradient(135deg, #3b82f6, #6366f1);
+
+  /* Buttons */
+  --btn-primary-bg: var(--accent-gradient);
+  --btn-primary-color: #ffffff;
+
+  /* Shadows (refined, soft) */
+  --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.07);
+  --shadow-softer: 0 5px 14px rgba(15, 23, 42, 0.05);
 }
+
 
 [data-theme="dark"] {
-  /* Dark Mode - Not Too Dark */
-  --bg-primary: #1a202c;
-  --bg-secondary: #2d3748;
-  --bg-card: #374151;
-  --bg-glass: rgba(55, 65, 81, 0.9);
-  --text-primary: #f7fafc;
-  --text-secondary: #cbd5e0;
-  --text-muted: #a0aec0;
-  --border-color: rgba(203, 213, 224, 0.15);
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-hover: rgba(0, 0, 0, 0.4);
-  
-  --gradient-1: #818cf8;
-  --gradient-2: #a78bfa;
-  --accent-purple: #a78bfa;
-  --accent-blue: #60a5fa;
-  --accent-success: #34d399;
-  --accent-warning: #fbbf24;
-  --accent-error: #f87171;
+  /* Dark Mode - AI teacher style */
+  --bg-primary: #0f172a;
+  --bg-secondary: #020617;
+  --bg-card: #111827;
+  --bg-muted: #020617;
+
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-color: rgba(55, 65, 81, 0.9);
+
+  --accent-primary: #818cf8;
+  --accent-secondary: #a855f7;
+  --accent-gradient: linear-gradient(135deg, #818cf8, #a855f7);
+
+  --btn-primary-bg: var(--accent-gradient);
+  --btn-primary-color: #f9fafb;
+
+  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --shadow-softer: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
-html {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-body {
+/* Base */
+html, body {
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* Utility classes */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }
 .bg-card { background-color: var(--bg-card); }
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.border-default { border-color: var(--border-color); }
+.shadow-soft { box-shadow: var(--shadow-soft); }
 
-.card,
-.glass-card,
-.stat-card,
-.table-container,
-.modal-content {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 16px var(--shadow-color);
-  transition: all 0.3s ease;
-}
-
-input,
-textarea,
-select {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  transition: all 0.3s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--accent-purple);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-}
-
-input::placeholder {
-  color: var(--text-muted);
-}
-
+/* Primary button */
 .btn-primary {
-  background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-color);
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
 }
 
-a {
-  color: var(--accent-purple);
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  opacity: 0.97;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+/* Dark mode scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
 }
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 5px;
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #020617;
 }
-
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: var(--accent-purple);
+  background: #4b5563;
+  border-radius: 999px;
+}
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent-gradient);
+  color: #f9fafb;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  z-index: 9999;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.dark-mode-toggle:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: var(--shadow-soft);
+  opacity: 0.95;
 }
