@@ -190,14 +190,20 @@ body,
 }
 
 /* ===========================
-   THEME TOGGLE BUTTON
+   THEME TOGGLE BUTTON - FIXED
    ========================== */
+
+/* Hide on dashboard and admin pages */
+.dashboard .theme-toggle,
+.admin-dashboard .theme-toggle {
+  display: none;
+}
 
 .theme-toggle {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 999;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -221,6 +227,10 @@ body,
   width: 24px;
   height: 24px;
   fill: var(--text-primary);
+  stroke: var(--text-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   transition: transform 0.3s ease;
 }
 
