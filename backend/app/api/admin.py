@@ -1,38 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from typing import List, Optional
+from typing import List, Optional, Any
 from app.db.session import get_db
 from app.api.deps import get_current_active_user
 from app.models.user import User
 from app.core.security import get_password_hash
-from pydantic import BaseModel, field_serializer
+from pydantic import BaseModel
 from datetime import datetime
 import secrets
 import string
-from uuid import UUID
 
 router = APIRouter()
-
-# ============ SCHEMAS ============
-class UserResponse(BaseModel):
-    id: str
-    student_id: str
-    email: str
-    full_name: str
-    role: str
-    phone: Optional[str] = None
-    country: Optional[str] = None
-    email_verified: bool
-    profile_completion: int
-    created_at: datetime
-    
-    @field_serializer('id')
-    def serialize_id(self, id: UUID, _info):
-        return str(id)
-    
-    class Config:
-        from_attributes = True
 
 # ============ MIDDLEWARE ============
 def require_admin(current_user: User = Depends(get_current_active_user)):
@@ -66,7 +45,7 @@ async def get_overview_stats(
     }
 
 # ============ USER MANAGEMENT ============
-@router.get("/users", response_model=List[UserResponse])
+@router.get("/users")
 async def get_users(
     skip: int = 0,
     limit: int = 50,
@@ -90,7 +69,23 @@ async def get_users(
         )
     
     users = query.offset(skip).limit(limit).all()
-    return users
+    
+    # Manually convert to dict to handle UUID
+    return [
+        {
+            "id": str(user.id),
+            "student_id": user.student_id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role,
+            "phone": user.phone,
+            "country": user.country,
+            "email_verified": user.email_verified,
+            "profile_completion": user.profile_completion,
+            "created_at": user.created_at.isoformat() if user.created_at else None
+        }
+        for user in users
+    ]
 
 @router.delete("/users/{user_id}")
 async def delete_user(
