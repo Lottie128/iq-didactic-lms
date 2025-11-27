@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PasswordResetModal from './PasswordResetModal';
+import AddUserModal from './AddUserModal';
 import '../../styles/StudentManagement.css';
 
 interface Student {
@@ -20,6 +21,7 @@ const StudentManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [showAddStudent, setShowAddStudent] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -84,7 +86,7 @@ const StudentManagement: React.FC = () => {
     <div className="student-management">
       <div className="header">
         <h2>👨‍🎓 Student Management</h2>
-        <button className="btn-primary">➕ Add Student</button>
+        <button className="btn-primary" onClick={() => setShowAddStudent(true)}>➕ Add Student</button>
       </div>
 
       <div className="search-bar">
@@ -169,6 +171,14 @@ const StudentManagement: React.FC = () => {
           onSuccess={() => {
             console.log('Password reset successful');
           }}
+        />
+      )}
+
+      {showAddStudent && (
+        <AddUserModal
+          role="student"
+          onClose={() => setShowAddStudent(false)}
+          onSuccess={fetchStudents}
         />
       )}
     </div>
