@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from app.core.config import settings
-from app.api import auth, upload
+from app.api import auth, upload, admin
 
 app = FastAPI(
     title="IQ Didactic LMS API",
@@ -32,6 +32,7 @@ if settings.UPLOAD_STORAGE_TYPE == "local":
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(upload.router, prefix="/api/upload", tags=["Upload"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
 @app.get("/")
 async def root():
