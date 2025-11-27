@@ -1,0 +1,44 @@
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--gradient-1, #667eea), var(--gradient-2, #764ba2));
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 20px var(--shadow-color, rgba(0, 0, 0, 0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 6px 30px var(--shadow-hover, rgba(0, 0, 0, 0.3));
+  animation: none;
+}
+
+.dark-mode-toggle svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
+}
+
+.dark-mode-toggle:hover svg {
+  transform: rotate(180deg);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px var(--shadow-color, rgba(0, 0, 0, 0.2));
+  }
+  50% {
+    box-shadow: 0 6px 30px var(--shadow-hover, rgba(0, 0, 0, 0.3));
+  }
+}
