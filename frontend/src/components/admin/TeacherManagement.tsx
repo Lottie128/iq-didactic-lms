@@ -78,7 +78,9 @@ const TeacherManagement: React.FC = () => {
     <div className="student-management">
       <div className="header">
         <h2>👨‍🏫 Teacher Management</h2>
-        <button className="btn-primary" onClick={() => setShowAddTeacher(true)}>➕ Add Teacher</button>
+        <button className="btn-primary" onClick={() => setShowAddTeacher(true)}>
+          ➕ Add Teacher
+        </button>
       </div>
 
       <div className="search-bar">
@@ -97,69 +99,65 @@ const TeacherManagement: React.FC = () => {
       {loading ? (
         <div className="loading">Loading teachers...</div>
       ) : teachers.length === 0 ? (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '12px', 
-          padding: '3rem', 
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-        }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>👨‍🏫</div>
-          <h3 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>No Teachers Yet</h3>
-          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
+        <div className="empty-state">
+          <div className="empty-state-icon">👨‍🏫</div>
+          <h3>No Teachers Yet</h3>
+          <p>
             Click the "Add Teacher" button above to create your first teacher account.
           </p>
         </div>
       ) : (
         <div className="table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Teacher ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Country</th>
-                <th>Profile</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td><code>{teacher.student_id}</code></td>
-                  <td><strong>{teacher.full_name}</strong></td>
-                  <td>{teacher.email}</td>
-                  <td>{teacher.phone || '-'}</td>
-                  <td>{teacher.country || '-'}</td>
-                  <td>
-                    <div className="progress-bar-mini">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${teacher.profile_completion}%` }}
-                      />
-                      <span>{teacher.profile_completion}%</span>
-                    </div>
-                  </td>
-                  <td>{new Date(teacher.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="btn-icon view" title="View">👁️</button>
-                      <button className="btn-icon edit" title="Edit">✏️</button>
-                      <button 
-                        className="btn-icon delete" 
-                        onClick={() => handleDelete(teacher.id)}
-                        title="Delete"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Teacher ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Country</th>
+                  <th>Profile</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {teachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td><code>{teacher.student_id}</code></td>
+                    <td><strong>{teacher.full_name}</strong></td>
+                    <td>{teacher.email}</td>
+                    <td>{teacher.phone || '-'}</td>
+                    <td>{teacher.country || '-'}</td>
+                    <td>
+                      <div className="progress-bar-mini">
+                        <div 
+                          className="progress-fill" 
+                          style={{ width: `${teacher.profile_completion}%` }}
+                        />
+                        <span>{teacher.profile_completion}%</span>
+                      </div>
+                    </td>
+                    <td>{new Date(teacher.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button className="btn-icon view" title="View">👁️</button>
+                        <button className="btn-icon edit" title="Edit">✏️</button>
+                        <button 
+                          className="btn-icon delete" 
+                          onClick={() => handleDelete(teacher.id)}
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
