@@ -6,10 +6,11 @@ from app.db.session import get_db
 from app.api.deps import get_current_active_user
 from app.models.user import User
 from app.core.security import get_password_hash
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from datetime import datetime
 import secrets
 import string
+from uuid import UUID
 
 router = APIRouter()
 
@@ -20,11 +21,15 @@ class UserResponse(BaseModel):
     email: str
     full_name: str
     role: str
-    phone: Optional[str]
-    country: Optional[str]
+    phone: Optional[str] = None
+    country: Optional[str] = None
     email_verified: bool
     profile_completion: int
     created_at: datetime
+    
+    @field_serializer('id')
+    def serialize_id(self, id: UUID, _info):
+        return str(id)
     
     class Config:
         from_attributes = True
