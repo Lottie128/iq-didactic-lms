@@ -86,7 +86,9 @@ const StudentManagement: React.FC = () => {
     <div className="student-management">
       <div className="header">
         <h2>👨‍🎓 Student Management</h2>
-        <button className="btn-primary" onClick={() => setShowAddStudent(true)}>➕ Add Student</button>
+        <button className="btn-primary" onClick={() => setShowAddStudent(true)}>
+          ➕ Add Student
+        </button>
       </div>
 
       <div className="search-bar">
@@ -104,63 +106,73 @@ const StudentManagement: React.FC = () => {
 
       {loading ? (
         <div className="loading">Loading students...</div>
+      ) : students.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">👨‍🎓</div>
+          <h3>No Students Yet</h3>
+          <p>
+            Click the "Add Student" button above to create your first student account.
+          </p>
+        </div>
       ) : (
         <div className="table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Country</th>
-                <th>Profile</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id}>
-                  <td><code>{student.student_id}</code></td>
-                  <td><strong>{student.full_name}</strong></td>
-                  <td>{student.email}</td>
-                  <td>{student.phone || '-'}</td>
-                  <td>{student.country || '-'}</td>
-                  <td>
-                    <div className="progress-bar-mini">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${student.profile_completion}%` }}
-                      />
-                      <span>{student.profile_completion}%</span>
-                    </div>
-                  </td>
-                  <td>{new Date(student.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="btn-icon view" title="View">👁️</button>
-                      <button className="btn-icon edit" title="Edit">✏️</button>
-                      <button 
-                        className="btn-icon reset"
-                        onClick={() => handleResetPassword(student)}
-                        title="Reset Password"
-                      >
-                        🔐
-                      </button>
-                      <button 
-                        className="btn-icon delete" 
-                        onClick={() => handleDelete(student.id)}
-                        title="Delete"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Country</th>
+                  <th>Profile</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.id}>
+                    <td><code>{student.student_id}</code></td>
+                    <td><strong>{student.full_name}</strong></td>
+                    <td>{student.email}</td>
+                    <td>{student.phone || '-'}</td>
+                    <td>{student.country || '-'}</td>
+                    <td>
+                      <div className="progress-bar-mini">
+                        <div 
+                          className="progress-fill" 
+                          style={{ width: `${student.profile_completion}%` }}
+                        />
+                        <span>{student.profile_completion}%</span>
+                      </div>
+                    </td>
+                    <td>{new Date(student.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button className="btn-icon view" title="View">👁️</button>
+                        <button className="btn-icon edit" title="Edit">✏️</button>
+                        <button 
+                          className="btn-icon reset"
+                          onClick={() => handleResetPassword(student)}
+                          title="Reset Password"
+                        >
+                          🔐
+                        </button>
+                        <button 
+                          className="btn-icon delete" 
+                          onClick={() => handleDelete(student.id)}
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
