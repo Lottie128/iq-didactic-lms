@@ -9,6 +9,7 @@ import AnimatedBackground from './components/AnimatedBackground'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
+import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 
 const queryClient = new QueryClient()
@@ -34,6 +35,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <DashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute>
+                        <AdminDashboard />
                       </ProtectedRoute>
                     }
                   />
