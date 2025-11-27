@@ -35,6 +35,21 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ role, onClose, onSuccess })
       return;
     }
 
+    if (!/[A-Z]/.test(formData.password)) {
+      setError('Password must contain at least one uppercase letter');
+      return;
+    }
+
+    if (!/[a-z]/.test(formData.password)) {
+      setError('Password must contain at least one lowercase letter');
+      return;
+    }
+
+    if (!/[0-9]/.test(formData.password)) {
+      setError('Password must contain at least one number');
+      return;
+    }
+
     if (!formData.email || !formData.full_name) {
       setError('Email and Full Name are required');
       return;
@@ -45,19 +60,20 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ role, onClose, onSuccess })
     try {
       const token = localStorage.getItem('access_token');
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/users`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             email: formData.email,
             password: formData.password,
             full_name: formData.full_name,
-            phone: formData.phone || undefined,
-            country: formData.country || undefined,
-            occupation: formData.occupation || undefined,
+            phone: formData.phone || null,
+            country: formData.country || null,
+            occupation: formData.occupation || null,
             role: role,
             preferred_language: 'en'
           })
@@ -123,7 +139,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ role, onClose, onSuccess })
                   required
                   minLength={8}
                   style={{ width: '100%', padding: '0.75rem', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.9375rem' }}
-                  placeholder="Min 8 characters"
+                  placeholder="Password123"
                 />
               </div>
 
@@ -173,9 +189,22 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ role, onClose, onSuccess })
               </div>
             </div>
 
+            <div style={{ background: '#f1f5f9', padding: '1rem', borderRadius: '8px', marginTop: '1rem', fontSize: '0.875rem', color: '#475569' }}>
+              <strong>🔒 Password Requirements:</strong>
+              <ul style={{ margin: '0.5rem 0 0', paddingLeft: '1.5rem' }}>
+                <li>At least 8 characters</li>
+                <li>At least one uppercase letter (A-Z)</li>
+                <li>At least one lowercase letter (a-z)</li>
+                <li>At least one number (0-9)</li>
+              </ul>
+              <div style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                Example: <code style={{ background: 'white', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>Password123</code>
+              </div>
+            </div>
+
             {error && (
               <div style={{ background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginTop: '1rem', fontSize: '0.875rem' }}>
-                {error}
+                ⚠️ {error}
               </div>
             )}
           </div>
@@ -191,9 +220,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ role, onClose, onSuccess })
             <button 
               type="submit"
               disabled={loading}
-              style={{ padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+              style={{ padding: '0.75rem 1.5rem', background: loading ? '#94a3b8' : 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '500' }}
             >
-              {loading ? '⏳ Creating...' : `Create ${role === 'student' ? 'Student' : 'Teacher'}`}
+              {loading ? '⏳ Creating...' : `➕ Create ${role === 'student' ? 'Student' : 'Teacher'}`}
             </button>
           </div>
         </form>
