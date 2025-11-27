@@ -6,12 +6,24 @@ from app.db.session import get_db
 from app.api.deps import get_current_active_user
 from app.models.user import User
 from app.core.security import get_password_hash
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 import secrets
 import string
+import uuid
 
 router = APIRouter()
+
+# ============ SCHEMAS ============
+class CreateUserRequest(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+    role: str
+    phone: Optional[str] = None
+    country: Optional[str] = None
+    occupation: Optional[str] = None
+    preferred_language: str = "en"
 
 # ============ MIDDLEWARE ============
 def require_admin(current_user: User = Depends(get_current_active_user)):
@@ -86,6 +98,55 @@ async def get_users(
         }
         for user in users
     ]
+
+@router.post("/users")
+async def create_user(
+    user_data: CreateUserRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin)
+):
+    """Create a new user (admin only)"""
+    
+    # Check if user already exists
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Validate role
+    if user_data.role not in ["student", "teacher", "admin"]:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    
+    # Create user
+    new_user = User(
+        id=uuid.uuid4(),
+        student_id=User.generate_student_id(),
+        email=user_data.email,
+        password_hash=get_password_hash(user_data.password),
+        full_name=user_data.full_name,
+        role=user_data.role,
+        phone=user_data.phone,
+        country=user_data.country,
+        occupation=user_data.occupation,
+        preferred_language=user_data.preferred_language,
+        email_verified=True,  # Auto-verify admin-created users
+        profile_completion=0
+    )
+    
+    # Calculate profile completion
+    new_user.profile_completion = new_user.calculate_profile_completion()
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return {
+        "id": str(new_user.id),
+        "student_id": new_user.student_id,
+        "email": new_user.email,
+        "full_name": new_user.full_name,
+        "role": new_user.role,
+        "message": "User created successfully"
+    }
 
 @router.delete("/users/{user_id}")
 async def delete_user(
