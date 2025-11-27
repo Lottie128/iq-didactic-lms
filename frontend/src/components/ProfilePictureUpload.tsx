@@ -19,7 +19,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    console.log('File selected:', file.name, file.type, file.size);
+    console.log('📁 File selected:', file.name, file.type, file.size);
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -49,10 +49,11 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
       const formData = new FormData();
       formData.append('file', file);
 
-      // FIXED: Use 'access_token' not 'token'
+      // CRITICAL FIX: Use 'access_token' (with underscore)
       const token = localStorage.getItem('access_token');
-      console.log('Token found:', token ? 'Yes' : 'No');
-      console.log('API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/upload/profile-picture`);
+      
+      console.log('🔑 Token found:', token ? 'Yes ✓' : 'No ✗');
+      console.log('🌐 API URL:', `${import.meta.env.VITE_API_BASE_URL}/api/upload/profile-picture`);
 
       if (!token) {
         setError('Not authenticated. Please login again.');
@@ -71,11 +72,12 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         }
       );
 
-      console.log('Upload successful:', response.data);
+      console.log('✅ Upload successful:', response.data);
       onUploadSuccess(response.data.url);
+      
     } catch (err: any) {
-      console.error('Upload error:', err);
-      console.error('Error response:', err.response);
+      console.error('❌ Upload error:', err);
+      console.error('❌ Error response:', err.response);
       
       let errorMessage = 'Upload failed. Please try again.';
       
@@ -107,7 +109,6 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     setError(null);
 
     try {
-      // FIXED: Use 'access_token' not 'token'
       const token = localStorage.getItem('access_token');
       
       if (!token) {
@@ -123,11 +124,11 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         }
       );
       
-      console.log('Delete successful');
+      console.log('✅ Delete successful');
       setPreview(null);
       onUploadSuccess('');
     } catch (err: any) {
-      console.error('Delete error:', err);
+      console.error('❌ Delete error:', err);
       
       let errorMessage = 'Delete failed. Please try again.';
       
@@ -174,7 +175,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
         >
-          {uploading ? 'Uploading...' : (preview ? 'Change Picture' : 'Upload Picture')}
+          {uploading ? '⏳ Uploading...' : (preview ? '🔄 Change Picture' : '📤 Upload Picture')}
         </button>
 
         {preview && (
@@ -183,16 +184,16 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
             onClick={handleDelete}
             disabled={uploading}
           >
-            Remove
+            🗑️ Remove
           </button>
         )}
       </div>
 
       {error && (
         <div className="error-message">
-          {error}
+          ❌ {error}
           <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8 }}>
-            Check browser console for details
+            Check browser console (F12) for details
           </div>
         </div>
       )}

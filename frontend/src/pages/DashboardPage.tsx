@@ -2,6 +2,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import ProfilePictureUpload from '../components/ProfilePictureUpload'
+import AITeacher from '../components/AITeacher'
 import '../styles/EnhancedDashboard.css'
 
 const DashboardPage = () => {
@@ -9,6 +10,7 @@ const DashboardPage = () => {
   const { t, i18n } = useTranslation()
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [showAchievement, setShowAchievement] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'ai-teacher'>('overview')
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'fr' : 'en'
@@ -167,69 +169,102 @@ const DashboardPage = () => {
                 <span className="stat-label">Day Streak</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* User Info Card */}
-        <div className="info-grid">
-          <div className="info-card">
-            <h3>👤 Personal Information</h3>
-            <div className="info-row">
-              <span className="info-label">Email:</span>
-              <span className="info-value">{user?.email}</span>
-              {user?.email_verified ? (
-                <span className="badge verified">✔️ Verified</span>
-              ) : (
-                <span className="badge unverified">⚠️ Unverified</span>
-              )}
-            </div>
-            <div className="info-row">
-              <span className="info-label">Phone:</span>
-              <span className="info-value">{user?.phone || 'Not provided'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Country:</span>
-              <span className="info-value">{user?.country || 'Not provided'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Occupation:</span>
-              <span className="info-value">{user?.occupation || 'Not provided'}</span>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <h3>⚙️ Preferences</h3>
-            <div className="info-row">
-              <span className="info-label">Role:</span>
-              <span className="badge role">{user?.role}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Language:</span>
-              <span className="info-value">
-                {user?.preferred_language === 'en' ? '🇬🇧 English' : '🇫🇷 Français'}
-              </span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Member Since:</span>
-              <span className="info-value">
-                {new Date(user?.created_at || '').toLocaleDateString()}
-              </span>
+            <div 
+              className="stat-card ai-quick-access" 
+              onClick={() => setActiveTab('ai-teacher')}
+            >
+              <div className="stat-icon">🤖</div>
+              <div className="stat-info">
+                <span className="stat-value">AI</span>
+                <span className="stat-label">Ask Teacher</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Courses Section */}
-        <div className="courses-section">
-          <h3>📚 {t('dashboard.myCourses')}</h3>
-          <div className="empty-state">
-            <div className="empty-icon">📦</div>
-            <p>{t('dashboard.noCourses')}</p>
-            <p className="empty-hint">
-              Courses will be available in the next feature: <code>feat/courses</code>
-            </p>
-            <button className="btn-primary">Browse Courses</button>
-          </div>
+        {/* Tab Navigation */}
+        <div className="tabs-container">
+          <button
+            className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            📊 Overview
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'ai-teacher' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai-teacher')}
+          >
+            🤖 AI Teacher
+          </button>
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' ? (
+          <>
+            {/* User Info Card */}
+            <div className="info-grid">
+              <div className="info-card">
+                <h3>👤 Personal Information</h3>
+                <div className="info-row">
+                  <span className="info-label">Email:</span>
+                  <span className="info-value">{user?.email}</span>
+                  {user?.email_verified ? (
+                    <span className="badge verified">✔️ Verified</span>
+                  ) : (
+                    <span className="badge unverified">⚠️ Unverified</span>
+                  )}
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Phone:</span>
+                  <span className="info-value">{user?.phone || 'Not provided'}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Country:</span>
+                  <span className="info-value">{user?.country || 'Not provided'}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Occupation:</span>
+                  <span className="info-value">{user?.occupation || 'Not provided'}</span>
+                </div>
+              </div>
+
+              <div className="info-card">
+                <h3>⚙️ Preferences</h3>
+                <div className="info-row">
+                  <span className="info-label">Role:</span>
+                  <span className="badge role">{user?.role}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Language:</span>
+                  <span className="info-value">
+                    {user?.preferred_language === 'en' ? '🇬🇧 English' : '🇫🇷 Français'}
+                  </span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Member Since:</span>
+                  <span className="info-value">
+                    {new Date(user?.created_at || '').toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Courses Section */}
+            <div className="courses-section">
+              <h3>📚 {t('dashboard.myCourses')}</h3>
+              <div className="empty-state">
+                <div className="empty-icon">📦</div>
+                <p>{t('dashboard.noCourses')}</p>
+                <p className="empty-hint">
+                  Courses will be available in the next feature: <code>feat/courses</code>
+                </p>
+                <button className="btn-primary">Browse Courses</button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <AITeacher />
+        )}
       </div>
 
       {/* Profile Picture Modal */}
@@ -402,6 +437,78 @@ const DashboardPage = () => {
             transform: scale(1);
             opacity: 1;
           }
+        }
+
+        .tabs-container {
+          display: flex;
+          gap: 0.5rem;
+          margin: 1.5rem 0;
+          padding: 0.5rem;
+          background: var(--bg-secondary, #f1f5f9);
+          border-radius: 12px;
+          width: 100%;
+          max-width: 600px;
+        }
+
+        .tab-btn {
+          flex: 1;
+          padding: 0.875rem 1.5rem;
+          border: none;
+          background: transparent;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9375rem;
+          font-weight: 500;
+          color: var(--text-secondary, #64748b);
+          transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+          background: rgba(102, 126, 234, 0.1);
+          color: var(--text-primary, #1e293b);
+        }
+
+        .tab-btn.active {
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-quick-access {
+          background: linear-gradient(135deg, #667eea, #764ba2) !important;
+          color: white !important;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .ai-quick-access .stat-icon {
+          filter: brightness(0) invert(1);
+        }
+
+        .ai-quick-access .stat-value,
+        .ai-quick-access .stat-label {
+          color: white !important;
+        }
+
+        .ai-quick-access:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+        }
+
+        .ai-quick-access::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.5s;
+        }
+
+        .ai-quick-access:hover::before {
+          left: 100%;
         }
       `}</style>
     </div>
